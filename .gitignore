@@ -1,0 +1,5 @@
+﻿__pycache__/
+*.pyc
+data/ip_data.json
+*.egg-info/
+.env
