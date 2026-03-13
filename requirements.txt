@@ -1,0 +1,9 @@
+# IP Management Tool — Python dependencies
+# All packages below are part of the Python standard library.
+# No external pip installs are required to run this application.
+
+# tkinter  — GUI framework (bundled with Python 3.x)
+# json     — data persistence
+# os       — file/path utilities
+# re       — regex for IP validation
+# datetime — record timestamps

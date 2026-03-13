@@ -1,5 +1,19 @@
-﻿__pycache__/
+__pycache__/
 *.pyc
-data/ip_data.json
+*.pyo
+*.pyd
+.Python
 *.egg-info/
+dist/
+build/
 .env
+.venv
+venv/
+
+# data store — contains personal IP records, do not commit
+data/ip_data.json
+
+# IDE folders
+.vscode/
+.idea/
+*.swp
