@@ -1,4 +1,8 @@
 import re
+from typing import Set
+
+# Valid IP address statuses
+VALID_STATUSES: Set[str] = {"Active", "Inactive", "Reserved"}
 
 
 def validate_ip(ip: str) -> bool:
@@ -10,7 +14,7 @@ def validate_ip(ip: str) -> bool:
 
 
 def validate_subnet(subnet: str) -> bool:
-    """Validate subnet — accepts CIDR (0-32) or dotted notation."""
+    """Validate subnet — accepts CIDR (0-32) or dotted netmask notation."""
     subnet = subnet.strip()
     # CIDR prefix
     try:
@@ -18,11 +22,20 @@ def validate_subnet(subnet: str) -> bool:
         return 0 <= val <= 32
     except ValueError:
         pass
-    # Dotted mask
+    # Dotted netmask - must have contiguous 1s followed by 0s
     pattern = r"^(\d{1,3}\.){3}\d{1,3}$"
     if re.match(pattern, subnet):
-        parts = subnet.split(".")
-        return all(0 <= int(p) <= 255 for p in parts)
+        try:
+            parts = [int(p) for p in subnet.split(".")]
+            if not all(0 <= p <= 255 for p in parts):
+                return False
+            # Convert to 32-bit integer
+            num = (parts[0] << 24) + (parts[1] << 16) + (parts[2] << 8) + parts[3]
+            # Valid netmask: all 1s followed by all 0s in binary
+            inv = num ^ 0xffffffff
+            return (inv + 1) & inv == 0
+        except (ValueError, IndexError):
+            return False
     return False
 
 

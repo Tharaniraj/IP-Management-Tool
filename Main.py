@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 
 from modules import (
     load_records, add_record, update_record, delete_record, get_summary,
-    search_records, sort_records,
+    search_records, sort_records, VALID_STATUSES,
 )
 
 
@@ -184,7 +184,7 @@ class IPManagementApp(tk.Tk):
             "Hostname": "hostname", "Status": "status", "Added On": "added_on",
         }
         sk = col_map.get(self._sort_col, "ip")
-        results = sort_records(results, key=sk, reverse=self._sort_rev)
+        results = self._sort_results(results, key=sk, reverse=self._sort_rev)
 
         self.tree.delete(*self.tree.get_children())
         for row_n, rec in enumerate(results):
@@ -214,6 +214,21 @@ class IPManagementApp(tk.Tk):
             + (f"  ·  search: '{query}'" if query.strip() else "")
             + (f"  ·  filter: {status}"  if status != "All" else "")
         )
+    
+    def _sort_results(self, records, key="ip", reverse=False):
+        """Sort records by field. IP addresses sorted numerically."""
+        if key == "ip":
+            from modules.validator import ip_to_int
+            def sort_key(r):
+                try:
+                    return ip_to_int(r.get("ip", "0.0.0.0"))
+                except Exception:
+                    return 0
+        else:
+            def sort_key(r):
+                return str(r.get(key, "")).lower()
+        
+        return sorted(records, key=sort_key, reverse=reverse)
 
     def _on_header_click(self, col):
         if self._sort_col == col:
@@ -300,7 +315,7 @@ class IPManagementApp(tk.Tk):
                  font=("Consolas", 10)).grid(row=4, column=0, sticky="w", pady=(0, 2))
         status_var = tk.StringVar(value=rec.get("status", "Active"))
         ttk.Combobox(ff, textvariable=status_var,
-                     values=["Active", "Inactive", "Reserved"],
+                     values=list(VALID_STATUSES),
                      state="readonly", font=("Consolas", 11)).grid(
                          row=4, column=1, sticky="ew", pady=(0, 12), padx=(12, 0), ipady=5)
 

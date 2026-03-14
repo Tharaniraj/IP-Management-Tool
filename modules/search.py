@@ -3,10 +3,10 @@ from typing import List, Dict
 
 
 def search_records(
-    records: List[Dict],
+    records: list[dict],
     query: str,
-    fields: List[str] = None,
-) -> List[Dict]:
+    fields: list[str] | None = None,
+) -> list[dict]:
     """
     Return records where any of the given fields contain the query string.
     Case-insensitive. If fields is None, all fields are searched.
@@ -30,16 +30,16 @@ def search_records(
     return results
 
 
-def filter_by_status(records: List[Dict], status: str) -> List[Dict]:
+def filter_by_status(records: list[dict], status: str) -> list[dict]:
     """Filter records by exact status match."""
     return [r for r in records if r.get("status", "").lower() == status.lower()]
 
 
 def sort_records(
-    records: List[Dict],
+    records: list[dict],
     key: str = "ip",
     reverse: bool = False,
-) -> List[Dict]:
+) -> list[dict]:
     """Sort records by field. IP addresses sorted numerically."""
     if key == "ip":
         from modules.validator import ip_to_int

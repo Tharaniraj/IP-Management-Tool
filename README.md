@@ -7,10 +7,10 @@ A Python-based GUI application for managing, tracking, and organizing IP address
 ## Features
 
 - Add, edit, and delete IP address records (CRUD operations)
-- Subnet search and filtering
-- Auto-save to Excel (.xlsx) or CSV
-- IP conflict detection
-- Export and import support
+- Subnet and IP address search and filtering
+- Real-time IP conflict detection
+- Auto-save to JSON data file
+- Multi-column sorting and status filtering
 - Clean and intuitive GUI built with Tkinter
 
 ---
@@ -25,14 +25,8 @@ A Python-based GUI application for managing, tracking, and organizing IP address
 
 - Python 3.8+
 - `tkinter` (built-in with Python)
-- `openpyxl` — for Excel read/write
-- `pandas` — for data handling
 
-Install dependencies:
-
-```bash
-pip install openpyxl pandas
-```
+No external pip packages required — all dependencies are from the Python standard library.
 
 ---
 
@@ -57,13 +51,15 @@ python main.py
 
 ```
 IP-Management-Tool/
-├── main.py               # Application entry point
-├── gui/
-│   └── app.py            # Main GUI window
-├── utils/
-│   └── ip_helper.py      # IP validation and subnet utilities
+├── Main.py               # Application entry point and GUI
+├── modules/
+│   ├── __init__.py       # Module exports
+│   ├── ip_manager.py     # CRUD operations and data management
+│   ├── validator.py      # IP and subnet validation
+│   ├── search.py         # Search and filter functionality
+│   └── core.py           # Core initialization
 ├── data/
-│   └── ip_database.xlsx  # Excel backend (auto-created on first run)
+│   └── ip_data.json      # JSON data store (auto-created on first run)
 ├── requirements.txt
 └── README.md
 ```
@@ -86,8 +82,7 @@ IP-Management-Tool/
 
 - [Python](https://www.python.org/)
 - [Tkinter](https://docs.python.org/3/library/tkinter.html) — GUI framework
-- [openpyxl](https://openpyxl.readthedocs.io/) — Excel integration
-- [pandas](https://pandas.pydata.org/) — Data management
+- [JSON](https://docs.python.org/3/library/json.html) — Data persistence
 
 ---
 

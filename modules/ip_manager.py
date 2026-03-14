@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 
-from modules.validator import validate_ip, validate_subnet, normalize_subnet
+from modules.validator import validate_ip, validate_subnet, normalize_subnet, VALID_STATUSES
 
 DATA_DIR  = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 DATA_FILE = os.path.join(DATA_DIR, "ip_data.json")
@@ -47,11 +47,12 @@ def _find_duplicate(records: List[Dict], ip: str, exclude_index: int = -1) -> bo
 def validate_entry(
     ip: str,
     subnet: str,
+    status: str,
     records: List[Dict],
     exclude_index: int = -1,
 ) -> Tuple[bool, str]:
     """
-    Validate an IP + subnet pair before insert/update.
+    Validate an IP + subnet + status triple before insert/update.
     Returns (is_valid, error_message).
     """
     if not ip.strip():
@@ -62,6 +63,8 @@ def validate_entry(
         return False, "Subnet is required."
     if not validate_subnet(subnet):
         return False, f"Invalid subnet: '{subnet}'. Use CIDR (e.g. 24) or mask (e.g. 255.255.255.0)"
+    if status not in VALID_STATUSES:
+        return False, f"Invalid status: '{status}'. Must be one of {VALID_STATUSES}"
     if _find_duplicate(records, ip, exclude_index=exclude_index):
         return False, f"IP address '{ip}' already exists in the database."
     return True, ""
@@ -79,7 +82,7 @@ def add_record(
     Add a new record. Returns (updated_records, error_message).
     error_message is empty string on success.
     """
-    ok, err = validate_entry(ip, subnet, records)
+    ok, err = validate_entry(ip, subnet, status, records)
     if not ok:
         return records, err
 
@@ -111,7 +114,7 @@ def update_record(
     if index < 0 or index >= len(records):
         return records, "Record index out of range."
 
-    ok, err = validate_entry(ip, subnet, records, exclude_index=index)
+    ok, err = validate_entry(ip, subnet, status, records, exclude_index=index)
     if not ok:
         return records, err
 
