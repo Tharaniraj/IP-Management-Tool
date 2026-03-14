@@ -4,7 +4,10 @@ import os
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 
-from modules.validator import validate_ip, validate_subnet, normalize_subnet, VALID_STATUSES
+from modules.validator import (
+    validate_ip, validate_subnet, normalize_subnet, VALID_STATUSES,
+    validate_hostname_unique
+)
 
 DATA_DIR  = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 DATA_FILE = os.path.join(DATA_DIR, "ip_data.json")
@@ -50,9 +53,12 @@ def validate_entry(
     status: str,
     records: List[Dict],
     exclude_index: int = -1,
+    hostname: str = "",
+    hostname_required: bool = False,
 ) -> Tuple[bool, str]:
     """
     Validate an IP + subnet + status triple before insert/update.
+    Optionally validate hostname uniqueness.
     Returns (is_valid, error_message).
     """
     if not ip.strip():
@@ -67,6 +73,10 @@ def validate_entry(
         return False, f"Invalid status: '{status}'. Must be one of {VALID_STATUSES}"
     if _find_duplicate(records, ip, exclude_index=exclude_index):
         return False, f"IP address '{ip}' already exists in the database."
+    if hostname_required and not hostname.strip():
+        return False, "Hostname is required."
+    if hostname and not validate_hostname_unique(hostname, records, exclude_index=exclude_index):
+        return False, f"Hostname '{hostname}' is already in use."
     return True, ""
 
 
@@ -82,7 +92,10 @@ def add_record(
     Add a new record. Returns (updated_records, error_message).
     error_message is empty string on success.
     """
-    ok, err = validate_entry(ip, subnet, status, records)
+    ok, err = validate_entry(
+        ip, subnet, status, records,
+        hostname=hostname
+    )
     if not ok:
         return records, err
 
@@ -114,7 +127,11 @@ def update_record(
     if index < 0 or index >= len(records):
         return records, "Record index out of range."
 
-    ok, err = validate_entry(ip, subnet, status, records, exclude_index=index)
+    ok, err = validate_entry(
+        ip, subnet, status, records,
+        exclude_index=index,
+        hostname=hostname
+    )
     if not ok:
         return records, err
 
