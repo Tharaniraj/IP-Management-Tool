@@ -1,9 +1,15 @@
 # IP Management Tool — Python dependencies
-# All packages below are part of the Python standard library.
-# No external pip installs are required to run this application.
 
+# Desktop Version (Tkinter) - uses only stdlib
 # tkinter  — GUI framework (bundled with Python 3.x)
 # json     — data persistence
 # os       — file/path utilities
 # re       — regex for IP validation
 # datetime — record timestamps
+
+# Web Version (Flask) - requires pip install
+Flask==3.0.0
+Flask-CORS==4.0.0
+
+# To install all dependencies:
+# pip install -r requirements.txt

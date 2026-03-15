@@ -172,7 +172,7 @@ class IPManagementApp(tk.Tk):
             ("⚙  Settings",  "#6b7280", "#9ca3af", self._show_settings),
             ("⟳  Refresh",   "#21262d", "#30363d", self._refresh_table),
         ]:
-            b = self._btn(bbar, label, bg, hov, cmd, bold=True, pady=8, padx=18)
+            b = self._btn_3d(bbar, label, bg, hov, cmd, bold=True, pady=8, padx=12)
             b.pack(side="left", padx=(0, 10))
 
         # status bar
@@ -203,7 +203,47 @@ class IPManagementApp(tk.Tk):
         b.bind("<Leave>", lambda _, w=b, c=bg:   w.config(bg=c))
         return b
 
+    def _btn_3d(self, parent, text, bg, hover, cmd,
+                bold=False, padx=12, pady=8):
+        """Create a modern styled button with better visual appearance"""
+        weight = "bold" if bold else "normal"
+        
+        # Create a frame container with padding to simulate border/3D effect
+        btn_frame = tk.Frame(parent, bg=bg, highlightthickness=0)
+        
+        # Create the actual button inside with padding
+        b = tk.Button(btn_frame, text=text, bg=bg, fg="#ffffff",
+                      font=("Consolas", 11, weight),
+                      relief="flat", cursor="hand2", bd=0,
+                      highlightthickness=0, activebackground=hover, 
+                      activeforeground="#ffffff", command=cmd, 
+                      padx=padx, pady=pady)
+        b.pack()
+        
+        # Store original colors
+        b.original_bg = bg
+        b.hover_bg = hover
+        b.parent_frame = btn_frame
+        
+        # Smooth hover effects with frame effect
+        def on_enter(event):
+            btn_frame.config(bg=hover)
+            b.config(bg=hover)
+        
+        def on_leave(event):
+            btn_frame.config(bg=bg)
+            b.config(bg=bg)
+        
+        b.bind("<Enter>", on_enter)
+        b.bind("<Leave>", on_leave)
+        btn_frame.bind("<Enter>", on_enter)
+        btn_frame.bind("<Leave>", on_leave)
+        
+        # Return the frame so it can be packed
+        return btn_frame
+
     # ── table ─────────────────────────────────────────────────────────────────
+
 
     def _refresh_table(self, *_):
         query  = self.search_var.get()
@@ -501,13 +541,13 @@ class IPManagementApp(tk.Tk):
         bframe = tk.Frame(dlg, bg="#161b22")
         bframe.pack(fill="x", padx=16, pady=(0, 12))
         
-        self._btn(bframe, "Recover", "#1f6feb", "#388bfd", recover_selected,
-                 bold=True, padx=16, pady=8).pack(side="left")
-        self._btn(bframe, "Clear All", "#7d1a1a", "#b91c1c", 
-                 lambda: self._confirm_clear_deleted(dlg),
-                 padx=16, pady=8).pack(side="left", padx=(10, 0))
-        self._btn(bframe, "Close", "#21262d", "#30363d", dlg.destroy,
-                 padx=16, pady=8).pack(side="left", padx=(10, 0))
+        self._btn_3d(bframe, "Recover", "#1f6feb", "#388bfd", recover_selected,
+                     bold=True, padx=16, pady=9).pack(side="left")
+        self._btn_3d(bframe, "Clear All", "#7d1a1a", "#b91c1c", 
+                     lambda: self._confirm_clear_deleted(dlg),
+                     padx=16, pady=9).pack(side="left", padx=(10, 0))
+        self._btn_3d(bframe, "Close", "#21262d", "#30363d", dlg.destroy,
+                     padx=16, pady=9).pack(side="left", padx=(10, 0))
     
     def _confirm_clear_deleted(self, dlg):
         """Confirm clearing all deleted records."""
@@ -618,10 +658,10 @@ class IPManagementApp(tk.Tk):
         bf.pack(fill="x", padx=26, pady=(12, 22))
 
         label = "Save" if mode == "add" else "Update"
-        self._btn(bf, label, "#1f6feb", "#388bfd", save,
-                  bold=True, padx=22, pady=9).pack(side="left")
-        self._btn(bf, "Cancel", "#21262d", "#30363d", dlg.destroy,
-                  padx=22, pady=9).pack(side="left", padx=(10, 0))
+        self._btn_3d(bf, label, "#1f6feb", "#388bfd", save,
+                     bold=True, padx=22, pady=10).pack(side="left")
+        self._btn_3d(bf, "Cancel", "#21262d", "#30363d", dlg.destroy,
+                     bold=False, padx=22, pady=10).pack(side="left", padx=(10, 0))
 
         dlg.bind("<Return>", lambda _: save())
         dlg.bind("<Escape>", lambda _: dlg.destroy())
@@ -771,10 +811,10 @@ class IPManagementApp(tk.Tk):
             log_info("Settings updated")
             dlg.destroy()
         
-        self._btn(bframe, "Save", "#1f6feb", "#388bfd", save_settings,
-                 bold=True, padx=18, pady=8).pack(side="left")
-        self._btn(bframe, "Cancel", "#21262d", "#30363d", dlg.destroy,
-                 padx=18, pady=8).pack(side="left", padx=(10, 0))
+        self._btn_3d(bframe, "Save", "#1f6feb", "#388bfd", save_settings,
+                     bold=True, padx=18, pady=9).pack(side="left")
+        self._btn_3d(bframe, "Cancel", "#21262d", "#30363d", dlg.destroy,
+                     padx=18, pady=9).pack(side="left", padx=(10, 0))
 
 
 # ── entry point ───────────────────────────────────────────────────────────────
